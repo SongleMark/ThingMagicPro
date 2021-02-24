@@ -1,0 +1,61 @@
+//============================================================================
+// @file        : pubdataitem.h
+// @Author      : terry.ye
+// @Version     : 1.0.0.0 
+// @Copyright   : Boingtech 2018
+// @Description : Header for pub data item
+//============================================================================
+#pragma region include
+#include "pubdata.h"
+#pragma endregion include
+
+#pragma region Class constructor
+/// @fn PubData
+/// constructor
+PubData::PubData()
+{
+	m_PubDataIndexMap.clear();
+	m_PubDataVct.clear();
+}
+#pragma endregion Class constructor
+
+#pragma region Destructor
+/// @fn PubData
+/// destructor
+PubData::~PubData()
+{
+	m_PubDataIndexMap.clear();
+	m_PubDataVct.clear();
+}
+#pragma endregion Destructor
+
+/// @fn find_PubDMap
+/// get PubDataItem from the map and vector
+/// @param key the string use as a key to find data in the map
+/// @return PubDataItem£¬if not find, the epc is empty£¬also can use the function isvalidate to get the states.
+PubDataItem PubData::find_PubData(std::string const& key)
+{
+	PubDataItem pubitem;
+	m_PubDataMutex.lock();
+	auto itr = m_PubDataIndexMap.find(key);
+	if (itr != m_PubDataIndexMap.end())
+	{
+		pubitem = m_PubDataVct[itr->second];
+		pubitem.status = true;
+	}
+	m_PubDataMutex.unlock();
+	return pubitem;
+}
+	
+/// @fn add_PubDMap
+/// add PubDataItem to the map and vector
+/// @param key the string use as a key add data to the map
+/// @param pubdataItem use as a value match the key add data to the map and vector
+/// @return void
+void PubData::add_PubData(std::string const& key, PubDataItem const& pubdataItem)
+{
+	m_PubDataMutex.lock();
+	m_PubDataVct.push_back(pubdataItem);
+	m_PubDataIndexMap.insert(make_pair(key,(int)m_PubDataVct.size()));
+	m_PubDataMutex.unlock();
+}

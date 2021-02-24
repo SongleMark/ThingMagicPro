@@ -1,0 +1,82 @@
+#ifndef LIBMERCURYCPP_H
+#define LIBMERCURYCPP_H
+
+#include "../c/src/api/tm_reader.h"
+#include <iostream>
+
+#define         LOGD   Libmercurycpp::printDebug
+#define         LOGE   Libmercurycpp::printError
+#define         LOG    Libmercurycpp::printT
+/**
+ * @brief The Libmercurycpp class
+ */
+/// Used mercury C API, provide function interface of ThingMagic.
+class Libmercurycpp
+{
+public:
+    /// used when user select menus.
+    enum            OPTIONS {
+                    EXIT_OPT       = 0,    CONNECT_OPT    = 1,
+                    DISCONNECT_OPT = 2,    READTAG_OPT    = 3,
+                    READALLMEM_OPT = 4
+    };
+
+    /// Constructor
+    explicit        Libmercurycpp();
+
+    /// Destructor
+    virtual         ~Libmercurycpp();
+
+    /// Create header of TMR reader and TMR_connect.
+    bool            connect(const char *url, char **antennaNum, int count);
+
+    /// TMR_destory the reader.
+    void            disConnect();
+
+    /// read EPC information.
+    bool            readEPC();
+
+    /// inventory tags.
+    bool            inventoryTags();
+
+    /// print normally debug log and the log's color is green.
+    void            printDebug(const char *tag, const char *format, ...);
+
+    /// print error or some important log, and the log's color is red.
+    void            printError(const char *tag, const char *format, ...);
+
+    /// print log and the log only have dateTime and content don't have tag.
+    void            printT(const char *format, ...);
+
+    /// get stdin
+    int             getStdin();
+
+    /// clean screen
+    void            cleanScreen();
+
+    /// stop screen and print a notice
+    void            noticeScreen(const char *str);
+
+protected:
+    /**************************************************************
+     *  the flowing function is inly used to this class.
+     * ===========================================================*/
+    void            errx(int exitval, const char *fmt, ...);
+    void            checkerr(TMR_Reader* rp, TMR_Status ret, int exitval, const char *msg);
+    void            serialPrinter(bool tx, uint32_t dataLen, const uint8_t data[], uint32_t timeout, void *cookie);
+    void            stringPrinter(bool tx,uint32_t dataLen, const uint8_t data[], uint32_t timeout, void *cookie);
+    void            parseAntennaList(uint8_t *antenna, uint8_t *antennaCount, char *args);
+
+private:
+    TMR_Reader      *m_Readerp;        /* The header of Reader */
+    bool             m_IsConnected;    /* The flag by connect ThingMagic Reader */
+    TMR_Region       m_Region;         /* RFID regulatory regions */
+    TMR_ReadPlan     m_Plan;           /* A ReadPlan structure specifies the antennas */
+    uint8_t         *m_AntennaList;    /* List of antenna */
+    uint8_t          m_AntennaCount;   /* Count of antenna */
+    char             m_Url[256];       /* User's input URL */
+    char             m_AntNumber[32];  /* User's input number of antenna */
+
+};
+
+#endif // LIBMERCURYCPP_H

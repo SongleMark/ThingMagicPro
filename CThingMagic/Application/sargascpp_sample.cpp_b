@@ -1,0 +1,107 @@
+//#include "../libSargas/libsargascpp.h"
+#include <assert.h>
+#include <stdio.h>
+#include "../libSargas/libmercurycpp.h"
+
+#define         TAG         "Main"
+
+#define         MENU    \
+                "\t\t\t****************************************************\n\n" \
+                "\t\t\t*            ThingMagic Sargas's sample            *\n\n" \
+                "\t\t\t****************************************************\n\n" \
+                "\t\t\t*              1. Connect.                         *\n\n" \
+                "\t\t\t*              2. DisConnect.                      *\n\n" \
+                "\t\t\t*              3. Read tags by fixed time          *\n\n" \
+                "\t\t\t*              4. ReadAllMemoryBank.               *\n\n" \
+                "\t\t\t*              0. exit.                            *\n\n" \
+                "\t\t\t****************************************************\n"
+
+Libmercurycpp   *gLibMercurycpp;
+
+TMR_Reader      gReader;
+TMR_Reader      *gReader_P;
+//LibSargasCpp    *gLibSargascpp;
+#if 0
+int main(int argc, char *argv[]) {
+    BOOL isStop = FALSE;
+    int  sel = 0;
+    gReader_P = &gReader;
+    gLibSargascpp =new LibSargasCpp;
+
+    while(!isStop) {
+        gLibSargascpp->cleanScreen();
+        printf("%s", MENU);
+        sel = gLibSargascpp->getStdin();
+        switch(sel) {
+        case LibSargasCpp::EXIT_OPT:
+            isStop = true;
+            break;
+        case LibSargasCpp::CONNECT_OPT:
+//            if(0 == gLibSargascpp->connect()) {
+//                gLibSargascpp->noticeScreen("\n");
+//            }
+//            if(gLibSargascpp->tmrCreate()) {
+//                gLibSargascpp->noticeScreen("\n");
+//            }
+            gLibSargascpp->init();
+//            if(0 == gLibSargascpp->init(argc, argv, gReader_P, LibSargasCpp::CONNECT_OPT)) {
+//                gLibSargascpp->noticeScreen("\n");
+//            }
+            break;
+        case LibSargasCpp::DISCONNECT_OPT:
+            gLibSargascpp->DeInit(gReader_P);
+            break;
+        case LibSargasCpp::READTAG_OPT:
+            //gLibSargascpp->readtag(argc, argv, gReader_P);
+            gLibSargascpp->readEPCtag();
+            gLibSargascpp->noticeScreen("read end ");
+            break;
+        case LibSargasCpp::READALLMEM_OPT:
+            gLibSargascpp->inventory();
+            //gLibSargascpp->inventoryBak();
+            break;
+        default:
+            break;
+        }
+    }
+    gLibSargascpp->cleanScreen();
+
+    return 0;
+}
+#endif
+int main(int argc, char *argv[]) {
+    int  isStop = 0;
+    int  sel = 0;
+    gLibMercurycpp =new Libmercurycpp;
+    char *antennaL[32];
+	antennaL[0] = "1";
+    //strcpy(antennaL[0], "1");
+
+    while(!isStop) {
+        gLibMercurycpp->cleanScreen();
+        printf("%s", MENU);
+        sel = gLibMercurycpp->getStdin();
+        switch(sel) {
+        case Libmercurycpp::EXIT_OPT:
+            isStop = true;
+            break;
+        case Libmercurycpp::CONNECT_OPT:
+            gLibMercurycpp->connect("tmr://localhost", antennaL, 1);
+            break;
+        case Libmercurycpp::DISCONNECT_OPT:
+            gLibMercurycpp->disConnect();
+            break;
+        case Libmercurycpp::READTAG_OPT:
+            gLibMercurycpp->readEPC();
+            break;
+        case Libmercurycpp::READALLMEM_OPT:
+
+            break;
+        default:
+            break;
+        }
+    }
+    gLibMercurycpp->cleanScreen();
+
+    return 0;
+}
